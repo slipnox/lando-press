@@ -1,0 +1,73 @@
+recipe: wordpress
+
+env_file:
+  - config/.env
+
+config:
+  php: '7.4'
+  via: nginx
+  database: mariadb
+  xdebug: true
+  webroot: wordpress
+  config:
+    php: config/php.ini
+
+services:
+  appserver:
+    overrides:
+      volumes:
+        - ./app/plugins:/app/wordpress/wp-content/plugins
+        - ./app/themes:/app/wordpress/wp-content/themes
+
+  database:
+    portforward: 3307
+
+  node:
+    type: node:13
+    globals:
+      yarn: latest
+    ports:
+      - 3000:3000
+
+  mailhog:
+    type: mailhog
+    hogfrom:
+      - appserver
+
+  pma:
+    type: phpmyadmin
+    hosts:
+      - database
+
+proxy:
+  mailhog:
+    - mailhog.lndo.site
+  pma:
+    - pma.lndo.site
+
+tooling:
+  yarn:
+    service: node
+
+  install-wp:
+    service: appserver
+    cmd: bash ./config/wp.sh
+    description: 'Install and configure WordPress.'
+
+  install-sage:
+    service: appserver
+    cmd:
+      - echo "Installing sage..."
+      - cd app/themes && composer create-project roots/sage $THEME_NAME
+      - echo "Sage theme installed in [app/themes/$THEME_NAME]"
+      - node: cd app/themes/$THEME_NAME && yarn add node-sass && yarn install && yarn build
+      - wp theme activate "$THEME_NAME/resources"
+    description: 'Install sage theme.'
+
+  db-backup:
+    service: appserver
+    cmd:
+      - echo "Backing up database..."
+      - wp db export ./app/db_backup.sql
+      - echo "Database successfully backed up"
+    description: 'Backup database.'

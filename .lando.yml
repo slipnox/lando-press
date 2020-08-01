@@ -1,0 +1,9 @@
+name: wpproject # update this with your project name
+
+services:
+  appserver:
+    overrides:
+      environment:
+        # change wpproject from this urls by your project name
+        WP_HOME: http://wpproject.lndo.site
+        WP_SITEURL: http://wpproject.lndo.site

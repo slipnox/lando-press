@@ -1,0 +1,36 @@
+{
+  "name": "slipnox/landopress",
+  "description": "Development wordpress.",
+  "type": "package",
+  "homepage": "http://hollywood-scoring.staging.clientqa.co",
+  "license": "GPL-2.0+",
+  "authors": [
+    {
+      "name": "Abrahan Silverio",
+      "homepage": "https://github.com/slipnox"
+    }
+  ],
+  "repositories":[
+    {
+      "type":"composer",
+      "url":"https://wpackagist.org"
+    }
+  ],
+  "require": {
+    "php": ">=7.2",
+    "wpackagist-plugin/classic-editor": "^1.5"
+  },
+  "extra": {
+    "installer-paths": {
+      "app/plugins/{$name}": [
+        "type:wordpress-plugin"
+      ],
+      "app/themes/{$name}": [
+        "type:wordpress-theme"
+      ],
+      "app/mu-plugins/{$name}": [
+        "type:wordpress-muplugin"
+      ]
+    }
+  }
+}
